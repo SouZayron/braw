@@ -25,13 +25,19 @@
     width:100%;
     overflow:hidden;
     font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-    background:
-      radial-gradient(circle at 15% 15%, var(--c11) 0%, transparent 55%),
-      radial-gradient(circle at 85% 20%, var(--c6) 0%, transparent 50%),
-      radial-gradient(circle at 50% 90%, var(--c11) 0%, transparent 60%),
-      linear-gradient(160deg, var(--c11) 0%, var(--c10) 45%, var(--c6) 100%);
     color:var(--c1);
     position:relative;
+  }
+
+  /* ---------- background gif ---------- */
+  #bg-gif{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    z-index:-1;
   }
 
   /* ---------- pixel stars ---------- */
@@ -159,6 +165,78 @@
     height:100%;
     object-fit:cover;
     display:block;
+  }
+
+  /* ---------- married heart hover ---------- */
+  .avatar-ring{
+    cursor:pointer;
+  }
+  .avatar-heart-ring{
+    position:absolute;
+    inset:-6px;
+    border-radius:50%;
+    border:3px solid #ff2d4d;
+    box-shadow:
+      0 0 10px 2px rgba(255,45,77,0.7),
+      0 0 22px 6px rgba(255,45,77,0.4);
+    opacity:0;
+    transform:scale(0.9);
+    transition:opacity .3s ease, transform .3s ease;
+    pointer-events:none;
+    z-index:3;
+  }
+  .avatar-ring:hover .avatar-heart-ring{
+    opacity:1;
+    transform:scale(1);
+    animation:heartPulse 1.1s ease-in-out infinite;
+  }
+  @keyframes heartPulse{
+    0%,100%{
+      box-shadow:
+        0 0 10px 2px rgba(255,45,77,0.7),
+        0 0 22px 6px rgba(255,45,77,0.4);
+    }
+    50%{
+      box-shadow:
+        0 0 16px 4px rgba(255,45,77,0.95),
+        0 0 34px 10px rgba(255,45,77,0.6);
+    }
+  }
+  .married-badge{
+    position:absolute;
+    bottom:-6px;
+    left:50%;
+    transform:translate(-50%,8px);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 14px;
+    border-radius:20px;
+    background:rgba(30,10,12,0.9);
+    border:1px solid rgba(255,45,77,0.5);
+    box-shadow:0 4px 16px rgba(0,0,0,0.5);
+    white-space:nowrap;
+    font-size:.68rem;
+    letter-spacing:.5px;
+    color:#ffd7dc;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+    z-index:4;
+  }
+  .avatar-ring:hover .married-badge{
+    opacity:1;
+    transform:translate(-50%,0);
+  }
+  .married-badge svg{
+    width:12px;
+    height:12px;
+    fill:#ff2d4d;
+    animation:heartBeat 1s ease-in-out infinite;
+  }
+  @keyframes heartBeat{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.25); }
   }
 
   .avatar-shine{
@@ -485,6 +563,7 @@
 </head>
 <body>
 
+<img id="bg-gif" src="https://xatimg.com/image/Cdofct1EeBj7.gif" alt="">
 <div id="stars"></div>
 <div class="glow-blob a"></div>
 <div class="glow-blob b"></div>
@@ -499,6 +578,11 @@
         <div class="avatar-inner">
           <img id="avatarImg" src="" alt="foto de perfil">
           <div class="avatar-shine"></div>
+        </div>
+        <div class="avatar-heart-ring"></div>
+        <div class="married-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.1C.6 9.9 1.6 6.2 4.8 5.1c2-.7 4 .1 5.2 1.9C11.2 5.2 13.2 4.4 15.2 5.1c3.2 1.1 4.2 4.8 2.1 7.8C18.7 16.65 12 21 12 21z"/></svg>
+          Married: INEFFABILIS (1534816445)
         </div>
       </div>
       <div class="name-wrap">
@@ -650,8 +734,7 @@
     audio.innerHTML = `<source src="${data.track_url}" type="audio/mpeg">`;
     audio.load();
     const vol = (data.volume ?? 70);
-    targetVolume = vol / 100;
-    audio.volume = targetVolume;
+    audio.volume = vol / 100;
     document.getElementById('volSlider').value = vol;
     document.getElementById('volVal').textContent = vol + '%';
   }
@@ -682,24 +765,11 @@
   const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 
   let isPlaying = false;
-  let targetVolume = 0.7; // definido em renderProfile() com o volume vindo do Supabase
-  let unmuteTimeout = null;
-
-  function unmuteAfterDelay(){
-    clearTimeout(unmuteTimeout);
-    unmuteTimeout = setTimeout(() => {
-      audio.muted = false;
-      audio.volume = targetVolume;
-    }, 3000);
-  }
 
   function startPlaying(){
-    // inicia mudo para contornar o bloqueio de autoplay dos navegadores
-    audio.muted = true;
     audio.play().then(() => {
       isPlaying = true;
       playIcon.innerHTML = ICON_PAUSE;
-      unmuteAfterDelay();
     }).catch(() => {
       // autoplay bloqueado pelo navegador — aguarda interação do usuário
       isPlaying = false;
@@ -721,9 +791,6 @@
 
   playBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    clearTimeout(unmuteTimeout);
-    audio.muted = false;
-    audio.volume = targetVolume;
     if(isPlaying){
       audio.pause();
       playIcon.innerHTML = ICON_PLAY;
