@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — ɮشمج</title>
+<style>
+  :root{
+    --c1:#f7e8d6; --c2:#f4dec2; --c4:#bf8158; --c6:#6a4832;
+    --c10:#362920; --c11:#2F0000; --c12:#C79C83;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    min-height:100vh;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:linear-gradient(160deg, var(--c11) 0%, var(--c10) 45%, var(--c6) 100%);
+    color:var(--c1);
+    padding:40px 16px;
+    display:flex;
+    justify-content:center;
+  }
+  .wrap{ width:100%; max-width:560px; }
+  h1{ font-size:1.4rem; margin-bottom:24px; text-align:center; }
+
+  .card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(247,232,214,0.15);
+    border-radius:16px;
+    padding:24px;
+    margin-bottom:18px;
+  }
+  label{
+    display:block;
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--c12);
+    margin-bottom:6px;
+    margin-top:14px;
+  }
+  label:first-of-type{ margin-top:0; }
+  input[type=text], input[type=password], input[type=number], input[type=url], textarea{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid rgba(247,232,214,0.2);
+    background:rgba(0,0,0,0.2);
+    color:var(--c1);
+    font-size:.9rem;
+    font-family:inherit;
+  }
+  textarea{ resize:vertical; min-height:60px; }
+  input:focus, textarea:focus{ outline:2px solid var(--c4); }
+
+  .row{ display:flex; gap:10px; }
+  .row > div{ flex:1; }
+
+  button{
+    cursor:pointer;
+    border:none;
+    border-radius:10px;
+    font-family:inherit;
+    font-weight:600;
+  }
+  .btn-primary{
+    width:100%;
+    padding:12px;
+    background:var(--c4);
+    color:var(--c10);
+    font-size:.95rem;
+    margin-top:8px;
+  }
+  .btn-primary:hover{ background:var(--c12); }
+  .btn-small{
+    padding:6px 10px;
+    background:rgba(255,255,255,0.08);
+    color:var(--c1);
+    font-size:.75rem;
+  }
+  .btn-small:hover{ background:rgba(255,255,255,0.16); }
+  .btn-add{
+    padding:8px 14px;
+    background:rgba(191,129,88,0.2);
+    color:var(--c2);
+    font-size:.8rem;
+    border:1px dashed rgba(247,232,214,0.3);
+    width:100%;
+    margin-top:8px;
+  }
+
+  .list-item{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    margin-top:8px;
+  }
+  .list-item input{ flex:1; }
+
+  .section-title{
+    font-size:1rem;
+    font-weight:700;
+    color:var(--c1);
+    margin-bottom:4px;
+  }
+
+  #loginScreen{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    max-width:320px;
+    margin:80px auto;
+    text-align:center;
+  }
+  #loginScreen input{ text-align:center; }
+  #statusMsg{
+    text-align:center;
+    font-size:.85rem;
+    margin-top:10px;
+    min-height:20px;
+  }
+  #statusMsg.ok{ color:#8fd18f; }
+  #statusMsg.err{ color:#e08a8a; }
+
+  #appScreen{ display:none; }
+
+  .color-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:8px;
+  }
+  .color-item input[type=color]{
+    width:38px; height:32px; padding:0; border:none; border-radius:6px; background:none;
+  }
+  .color-item input[type=text]{ flex:1; }
+  .color-item span{ font-size:.75rem; color:var(--c12); width:28px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div id="loginScreen">
+    <h1>Painel do perfil</h1>
+    <input type="password" id="passwordInput" placeholder="Senha do admin">
+    <button class="btn-primary" id="loginBtn" style="width:auto;padding:10px 24px;">Entrar</button>
+    <div id="loginError" style="color:#e08a8a;font-size:.85rem;"></div>
+  </div>
+
+  <div id="appScreen">
+    <h1>Editar perfil</h1>
+
+    <div class="card">
+      <div class="section-title">Nome + bio</div>
+      <label>Nome</label>
+      <input type="text" id="f_name">
+      <label>Bio (use &lt;br&gt; para quebrar linha)</label>
+      <textarea id="f_bio"></textarea>
+      <label>URL da foto de perfil</label>
+      <input type="url" id="f_avatar">
+    </div>
+
+    <div class="card">
+      <div class="section-title">Likes</div>
+      <div id="likesContainer"></div>
+      <button class="btn-add" id="addLike">+ adicionar like</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Links</div>
+      <div id="linksContainer"></div>
+      <button class="btn-add" id="addLink">+ adicionar link</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Música do player</div>
+      <label>Nome da faixa (exibido no marquee)</label>
+      <input type="text" id="f_track_name">
+      <label>URL/arquivo do áudio</label>
+      <input type="text" id="f_track_url">
+      <label>Volume inicial (%)</label>
+      <input type="number" id="f_volume" min="0" max="100">
+    </div>
+
+    <div class="card">
+      <div class="section-title">Cores / tema</div>
+      <div id="colorsContainer"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Assinatura</div>
+      <div class="row">
+        <div>
+          <label>Nome</label>
+          <input type="text" id="f_sig_name">
+        </div>
+        <div>
+          <label>URL</label>
+          <input type="url" id="f_sig_url">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="saveBtn">Salvar alterações</button>
+    <div id="statusMsg"></div>
+  </div>
+
+</div>
+
+<script>
+  // ==========================================================
+  // CONFIGURAÇÃO — preencha com os dados do seu projeto Supabase
+  // ==========================================================
+  const SUPABASE_URL = "https://rndhidaptqczkeowteqz.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_fGcCCNqOcXOY6FBcqXKYjg_t7W1qGUO";
+  const UPDATE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/update-profile`;
+
+  let currentPassword = "";
+  let currentData = null;
+
+  const loginScreen = document.getElementById('loginScreen');
+  const appScreen = document.getElementById('appScreen');
+  const passwordInput = document.getElementById('passwordInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginError = document.getElementById('loginError');
+  const statusMsg = document.getElementById('statusMsg');
+
+  // ---------- login ----------
+  loginBtn.addEventListener('click', login);
+  passwordInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') login(); });
+
+  async function login(){
+    const pw = passwordInput.value.trim();
+    if(!pw){ loginError.textContent = "Digite a senha."; return; }
+    loginError.textContent = "Verificando...";
+
+    // testa a senha fazendo um "save" vazio (sem alterar nada) —
+    // se vier 401, senha errada; qualquer outra resposta, senha ok
+    try{
+      const res = await fetch(UPDATE_FUNCTION_URL, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ password: pw, data: {} })
+      });
+      if(res.status === 401){
+        loginError.textContent = "Senha incorreta.";
+        return;
+      }
+      currentPassword = pw;
+      loginError.textContent = "";
+      loginScreen.style.display = 'none';
+      appScreen.style.display = 'block';
+      await loadData();
+    } catch(err){
+      loginError.textContent = "Erro de conexão. Confira SUPABASE_URL.";
+    }
+  }
+
+  // ---------- carregar dados atuais ----------
+  async function loadData(){
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profile?id=eq.1&select=*`, {
+      headers:{ apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    const rows = await res.json();
+    currentData = rows[0] || {};
+    populateForm(currentData);
+  }
+
+  function populateForm(data){
+    document.getElementById('f_name').value = data.name || '';
+    document.getElementById('f_bio').value = data.bio || '';
+    document.getElementById('f_avatar').value = data.avatar_url || '';
+    document.getElementById('f_track_name').value = data.track_name || '';
+    document.getElementById('f_track_url').value = data.track_url || '';
+    document.getElementById('f_volume').value = data.volume ?? 70;
+    document.getElementById('f_sig_name').value = data.signature_name || '';
+    document.getElementById('f_sig_url').value = data.signature_url || '';
+
+    // likes
+    const likesContainer = document.getElementById('likesContainer');
+    likesContainer.innerHTML = '';
+    (data.likes || []).forEach(like => addLikeRow(like));
+
+    // links
+    const linksContainer = document.getElementById('linksContainer');
+    linksContainer.innerHTML = '';
+    (data.links || []).forEach(link => addLinkRow(link));
+
+    // cores
+    const colorsContainer = document.getElementById('colorsContainer');
+    colorsContainer.innerHTML = '';
+    Object.entries(data.colors || {}).forEach(([key, val]) => addColorRow(key, val));
+  }
+
+  // ---------- likes dinâmicos ----------
+  function addLikeRow(value = ''){
+    const row = document.createElement('div');
+    row.className = 'list-item';
+    row.innerHTML = `
+      <input type="text" class="like-input" value="${escapeHtml(value)}">
+      <button class="btn-small remove-btn">remover</button>
+    `;
+    row.querySelector('.remove-btn').addEventListener('click', () => row.remove());
+    document.getElementById('likesContainer').appendChild(row);
+  }
+  document.getElementById('addLike').addEventListener('click', () => addLikeRow());
+
+  // ---------- links dinâmicos ----------
+  function addLinkRow(link = {}){
+    const row = document.createElement('div');
+    row.className = 'list-item';
+    row.style.flexWrap = 'wrap';
+    row.innerHTML = `
+      <input type="text" class="link-label-input" placeholder="Texto (ex: xat.com/sala)" value="${escapeHtml(link.label||'')}" style="flex:1 1 100%;">
+      <input type="url" class="link-url-input" placeholder="URL" value="${escapeHtml(link.url||'')}" style="flex:1 1 45%;">
+      <input type="url" class="link-icon-input" placeholder="URL do ícone (opcional)" value="${escapeHtml(link.icon||'')}" style="flex:1 1 45%;">
+      <button class="btn-small remove-btn">remover</button>
+    `;
+    row.querySelector('.remove-btn').addEventListener('click', () => row.remove());
+    document.getElementById('linksContainer').appendChild(row);
+  }
+  document.getElementById('addLink').addEventListener('click', () => addLinkRow());
+
+  // ---------- cores ----------
+  function addColorRow(key, val){
+    const row = document.createElement('div');
+    row.className = 'color-item';
+    row.innerHTML = `
+      <span>${key}</span>
+      <input type="color" class="color-picker" value="${val}">
+      <input type="text" class="color-text" value="${val}" data-key="${key}">
+    `;
+    const picker = row.querySelector('.color-picker');
+    const text = row.querySelector('.color-text');
+    picker.addEventListener('input', () => text.value = picker.value);
+    text.addEventListener('input', () => { if(/^#[0-9a-fA-F]{6}$/.test(text.value)) picker.value = text.value; });
+    document.getElementById('colorsContainer').appendChild(row);
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/"/g, '&quot;');
+  }
+
+  // ---------- salvar ----------
+  document.getElementById('saveBtn').addEventListener('click', save);
+
+  async function save(){
+    statusMsg.className = '';
+    statusMsg.textContent = 'Salvando...';
+
+    const likes = [...document.querySelectorAll('.like-input')]
+      .map(i => i.value.trim()).filter(Boolean);
+
+    const links = [...document.querySelectorAll('#linksContainer .list-item')].map(row => ({
+      label: row.querySelector('.link-label-input').value.trim(),
+      url: row.querySelector('.link-url-input').value.trim(),
+      icon: row.querySelector('.link-icon-input').value.trim(),
+    })).filter(l => l.label && l.url);
+
+    const colors = {};
+    document.querySelectorAll('.color-text').forEach(input => {
+      colors[input.dataset.key] = input.value.trim();
+    });
+
+    const payload = {
+      name: document.getElementById('f_name').value.trim(),
+      bio: document.getElementById('f_bio').value,
+      avatar_url: document.getElementById('f_avatar').value.trim(),
+      tags: currentData.tags || [],
+      likes,
+      links,
+      colors,
+      track_name: document.getElementById('f_track_name').value.trim(),
+      track_url: document.getElementById('f_track_url').value.trim(),
+      volume: Number(document.getElementById('f_volume').value) || 70,
+      signature_name: document.getElementById('f_sig_name').value.trim(),
+      signature_url: document.getElementById('f_sig_url').value.trim(),
+    };
+
+    try{
+      const res = await fetch(UPDATE_FUNCTION_URL, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ password: currentPassword, data: payload })
+      });
+      const result = await res.json();
+      if(res.ok && result.success){
+        statusMsg.textContent = 'Salvo com sucesso ✧';
+        statusMsg.className = 'ok';
+        currentData = { ...currentData, ...payload };
+      } else {
+        statusMsg.textContent = result.error || 'Erro ao salvar.';
+        statusMsg.className = 'err';
+      }
+    } catch(err){
+      statusMsg.textContent = 'Erro de conexão.';
+      statusMsg.className = 'err';
+    }
+  }
+</script>
+
+</body>
+</html>
