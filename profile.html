@@ -3,737 +3,604 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ɮشمج</title>
+<title>Admin — Editor do Perfil</title>
 <style>
   :root{
-    --c1:#f7e8d6;
-    --c2:#f4dec2;
-    --c3:#cead8d;
-    --c4:#bf8158;
-    --c5:#7c563a;
-    --c6:#6a4832;
-    --c7:#9e846c;
-    --c8:#85664f;
-    --c9:#8a7d68;
-    --c10:#362920;
-    --c11:#2F0000;
-    --c12:#C79C83;
+    --c1:#f7e8d6; --c2:#f4dec2; --c3:#cead8d; --c4:#bf8158; --c5:#7c563a;
+    --c6:#6a4832; --c9:#8a7d68; --c10:#362920; --c11:#2F0000; --c12:#C79C83;
+    --panel-bg: rgba(54,41,32,0.55);
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{
-    height:100%;
-    width:100%;
-    overflow:hidden;
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
     font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
     background:
       radial-gradient(circle at 15% 15%, var(--c11) 0%, transparent 55%),
       radial-gradient(circle at 85% 20%, var(--c6) 0%, transparent 50%),
-      radial-gradient(circle at 50% 90%, var(--c11) 0%, transparent 60%),
       linear-gradient(160deg, var(--c11) 0%, var(--c10) 45%, var(--c6) 100%);
     color:var(--c1);
-    position:relative;
   }
 
-  /* ---------- pixel stars ---------- */
-  #stars{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:0;
-  }
-  .pixel-star{
-    position:absolute;
-    width:3px;
-    height:3px;
-    background:var(--c2);
-    image-rendering:pixelated;
-    box-shadow:0 0 4px 1px rgba(247,232,214,0.5);
-    animation:twinkle 3.5s ease-in-out infinite;
-  }
-  @keyframes twinkle{
-    0%,100%{opacity:.15;}
-    50%{opacity:1;}
-  }
-
-  /* ---------- glow blobs ---------- */
-  .glow-blob{
-    position:fixed;
-    border-radius:50%;
-    filter:blur(70px);
-    opacity:.35;
-    z-index:0;
-    pointer-events:none;
-  }
-  .glow-blob.a{width:380px;height:380px;background:var(--c4);top:-100px;left:-100px;}
-  .glow-blob.b{width:420px;height:420px;background:var(--c5);bottom:-150px;right:-120px;}
-  .glow-blob.c{width:300px;height:300px;background:var(--c12);top:40%;left:50%;transform:translate(-50%,-50%);opacity:.15;}
-
-  /* ---------- layout ---------- */
-  .stage{
-    position:relative;
-    z-index:2;
-    height:100vh;
-    width:100vw;
+  /* ---------- login screen ---------- */
+  #loginScreen{
+    min-height:100vh;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:3vh 3vw;
+    padding:20px;
   }
-
-  .layout{
-    width:100%;
-    max-width:640px;
-    height:100%;
-    max-height:660px;
-    display:flex;
-  }
-
-  .glass{
-    background:linear-gradient(155deg, rgba(247,232,214,0.08), rgba(54,41,32,0.35));
+  .login-box{
+    background:var(--panel-bg);
     backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
     border:1px solid rgba(247,232,214,0.18);
-    border-radius:22px;
-    box-shadow:
-      0 8px 32px rgba(0,0,0,0.45),
-      inset 0 1px 0 rgba(255,255,255,0.06);
-    position:relative;
-    overflow:hidden;
-  }
-  .glass::before{
-    content:"";
-    position:absolute;
-    top:-40%;left:-20%;
-    width:140%;height:140%;
-    background:radial-gradient(circle at top left, rgba(247,232,214,0.10), transparent 60%);
-    pointer-events:none;
-  }
-
-  /* ---------- profile card ---------- */
-  .profile-card{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:34px 30px 26px;
-    text-align:center;
-    gap:12px;
+    border-radius:18px;
+    padding:36px 30px;
     width:100%;
-  }
-
-  .avatar-ring{
-    width:150px;
-    height:150px;
-    border-radius:50%;
-    padding:5px;
-    background:conic-gradient(from 0deg, var(--c4), var(--c12), var(--c4));
-    box-shadow:
-      0 0 18px 2px rgba(191,129,88,0.6),
-      0 0 34px 6px rgba(199,156,131,0.35);
-    animation:ringGlow 3.2s ease-in-out infinite;
-    position:relative;
-  }
-  @keyframes ringGlow{
-    0%,100%{
-      box-shadow:
-        0 0 18px 2px rgba(191,129,88,0.55),
-        0 0 30px 6px rgba(199,156,131,0.3);
-    }
-    50%{
-      box-shadow:
-        0 0 26px 4px rgba(191,129,88,0.85),
-        0 0 46px 10px rgba(199,156,131,0.5);
-    }
-  }
-  .avatar-inner{
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    overflow:hidden;
-    background:var(--c10);
-    border:3px solid var(--c11);
-    position:relative;
-  }
-  .avatar-inner img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-  }
-
-  .avatar-shine{
-    position:absolute;
-    top:0;
-    left:-150%;
-    width:60%;
-    height:100%;
-    background:linear-gradient(
-      100deg,
-      transparent 0%,
-      rgba(255,255,255,0.05) 35%,
-      rgba(255,255,255,0.55) 50%,
-      rgba(255,255,255,0.05) 65%,
-      transparent 100%
-    );
-    transform:skewX(-20deg);
-    animation:photoShine 20s ease-in-out infinite;
-    pointer-events:none;
-  }
-  @keyframes photoShine{
-    0%{ left:-150%; }
-    10%{ left:150%; }
-    100%{ left:150%; }
-  }
-
-  .name-wrap{
-    position:relative;
-    display:inline-block;
-    margin-top:4px;
-  }
-  .name{
-    font-size:2.1rem;
-    font-weight:700;
-    letter-spacing:1px;
-    color:var(--c1);
-    text-shadow:0 0 12px rgba(199,156,131,0.4);
-    position:relative;
-  }
-
-  /* camada de brilho em degradê deslizando por dentro do texto */
-  .name-shine{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    font-size:2.1rem;
-    font-weight:700;
-    letter-spacing:1px;
-    font-family:inherit;
-    white-space:nowrap;
-    pointer-events:none;
-    user-select:none;
-    background:linear-gradient(
-      100deg,
-      transparent 0%,
-      transparent 42%,
-      rgba(255,255,255,0.95) 50%,
-      transparent 58%,
-      transparent 100%
-    );
-    background-size:300% 100%;
-    -webkit-background-clip:text;
-    background-clip:text;
-    -webkit-text-fill-color:transparent;
-    color:transparent;
-    mix-blend-mode:screen;
-    animation:nameShine 4s linear infinite;
-  }
-  @keyframes nameShine{
-    0%{ background-position:150% 0; }
-    100%{ background-position:-150% 0; }
-  }
-
-  .bio{
-    font-size:.95rem;
-    color:var(--c2);
-    line-height:1.6;
     max-width:340px;
-    opacity:.9;
+    text-align:center;
+    box-shadow:0 8px 32px rgba(0,0,0,0.45);
   }
-
-  .tag-row{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    justify-content:center;
-    margin-top:4px;
-  }
-  .tag{
-    font-size:.72rem;
-    letter-spacing:.5px;
-    padding:5px 12px;
-    border-radius:30px;
+  .login-box h1{ font-size:1.2rem; margin:0 0 6px; }
+  .login-box p{ font-size:.82rem; color:var(--c3); margin:0 0 20px; }
+  .login-box input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
     border:1px solid rgba(247,232,214,0.25);
-    background:rgba(255,255,255,0.04);
-    color:var(--c3);
-    text-transform:uppercase;
+    background:rgba(0,0,0,0.25);
+    color:var(--c1);
+    font-size:.95rem;
+    margin-bottom:12px;
   }
-
-  /* ---------- inner sections (dentro do bloco único) ---------- */
-  .divider{
+  .login-box button{
     width:100%;
-    height:1px;
-    background:linear-gradient(90deg, transparent, rgba(247,232,214,0.25), transparent);
-    margin:6px 0;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    background:var(--c4);
+    color:#2a1a10;
+    font-weight:700;
+    font-size:.95rem;
+    cursor:pointer;
+    transition:transform .15s ease;
   }
+  .login-box button:hover{ transform:scale(1.02); }
+  #loginError{ color:#e08a7a; font-size:.8rem; margin-top:10px; min-height:1em; }
 
-  .section{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    align-items:center;
+  /* ---------- app layout ---------- */
+  #app{ display:none; }
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+    padding:14px 20px;
+    background:rgba(20,14,10,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(247,232,214,0.15);
   }
-
-  .block-title{
+  .topbar h1{ font-size:1rem; margin:0; }
+  .topbar .actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{
+    padding:9px 16px;
+    border-radius:9px;
+    border:1px solid rgba(247,232,214,0.25);
+    background:rgba(255,255,255,0.06);
+    color:var(--c1);
     font-size:.82rem;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    color:var(--c12);
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-weight:600;
+    cursor:pointer;
+    transition:all .15s ease;
   }
-  .block-title .pixel-icon{
-    width:7px;height:7px;
-    background:var(--c4);
-    box-shadow:0 0 6px 2px rgba(191,129,88,0.7);
-  }
+  .btn:hover{ background:rgba(255,255,255,0.12); }
+  .btn.primary{ background:var(--c4); color:#2a1a10; font-weight:700; border:none; }
+  .btn.primary:hover{ filter:brightness(1.08); }
+  .btn.danger{ border-color:rgba(224,138,122,0.4); color:#e08a7a; }
 
-  .likes-list{
+  .layout-wrap{
     display:flex;
-    flex-direction:column;
-    gap:6px;
-    font-size:.85rem;
-    color:var(--c2);
-    line-height:1.5;
-    text-align:center;
+    gap:24px;
+    padding:24px;
+    max-width:1400px;
+    margin:0 auto;
+    align-items:flex-start;
+    flex-wrap:wrap;
   }
-  .likes-list span{
-    color:var(--c12);
-    font-weight:600;
+  .editor-col{ flex:1 1 480px; min-width:320px; }
+  .preview-col{
+    flex:0 0 380px;
+    position:sticky;
+    top:80px;
   }
+  .preview-frame-wrap{
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid rgba(247,232,214,0.2);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    height:640px;
+  }
+  .preview-frame-wrap iframe{ width:100%; height:100%; border:none; }
 
-  .links-list{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    width:100%;
-    max-width:320px;
-  }
-  .link-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:16px 20px;
-    border-radius:14px;
-    background:rgba(255,255,255,0.04);
+  .card{
+    background:var(--panel-bg);
     border:1px solid rgba(247,232,214,0.15);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:18px;
+  }
+  .card h2{
+    font-size:.85rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--c12);
+    margin:0 0 16px;
+  }
+  label{
+    display:block;
+    font-size:.78rem;
+    color:var(--c3);
+    margin:12px 0 5px;
+  }
+  label:first-child{ margin-top:0; }
+  input[type=text], input[type=url], input[type=number], textarea{
+    width:100%;
+    padding:10px 12px;
+    border-radius:9px;
+    border:1px solid rgba(247,232,214,0.2);
+    background:rgba(0,0,0,0.25);
     color:var(--c1);
-    text-decoration:none;
-    font-size:.9rem;
-    transition:all .25s ease;
+    font-size:.88rem;
+    font-family:inherit;
   }
-  .link-item:hover{
-    background:rgba(191,129,88,0.18);
-    border-color:var(--c4);
-    transform:translateX(3px);
-  }
-  .link-item .arrow{color:var(--c4);}
-  .link-label{
+  textarea{ resize:vertical; min-height:70px; }
+  input[type=range]{ width:100%; }
+  input[type=file]{ font-size:.8rem; color:var(--c3); }
+
+  .list-item{
     display:flex;
+    gap:8px;
     align-items:center;
+    margin-bottom:8px;
+  }
+  .list-item input{ flex:1; }
+  .list-item .rm{
+    flex-shrink:0;
+    width:30px; height:30px;
+    border-radius:50%;
+    border:1px solid rgba(224,138,122,0.4);
+    background:transparent;
+    color:#e08a7a;
+    cursor:pointer;
+    font-size:.9rem;
+  }
+  .link-row{
+    border:1px solid rgba(247,232,214,0.12);
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:10px;
+  }
+  .link-row .list-item{ margin-bottom:6px; }
+  .add-btn{
+    margin-top:4px;
+    font-size:.78rem;
+    padding:7px 12px;
+    border-radius:8px;
+    border:1px dashed rgba(247,232,214,0.35);
+    background:transparent;
+    color:var(--c3);
+    cursor:pointer;
+  }
+  .add-btn:hover{ color:var(--c1); border-color:var(--c1); }
+
+  .avatar-preview{
+    width:64px; height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--c4);
+    margin-top:8px;
+  }
+
+  .colors-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(90px,1fr));
     gap:10px;
   }
-  .link-icon{
-    width:18px;
-    height:18px;
-    border-radius:4px;
-    object-fit:cover;
-    flex-shrink:0;
+  .color-item{ text-align:center; }
+  .color-item label{ margin:0 0 4px; font-size:.68rem; }
+  .color-item input[type=color]{
+    width:100%; height:34px;
+    border-radius:6px; border:1px solid rgba(247,232,214,0.2);
+    background:transparent; cursor:pointer;
   }
 
-  .signature{
-    text-align:center;
-    font-size:.65rem;
-    letter-spacing:1px;
-    color:var(--c9);
-    opacity:.7;
-    margin-top:2px;
-  }
-  .signature a{
-    color:var(--c12);
-    text-decoration:none;
-    border-bottom:1px solid rgba(199,156,131,0.4);
-    transition:color .2s ease, border-color .2s ease;
-  }
-  .signature a:hover{
-    color:var(--c1);
-    border-color:var(--c1);
-  }
-
-  /* ---------- music player ---------- */
-  .player{
-    position:absolute;
-    bottom:26px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:5;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:9px 16px 9px 9px;
-    border-radius:40px;
-    background:linear-gradient(120deg, rgba(54,41,32,0.75), rgba(106,72,50,0.55));
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
-    border:1px solid rgba(247,232,214,0.2);
-    box-shadow:0 6px 24px rgba(0,0,0,0.5);
-    width:min(360px, 80vw);
-  }
-
-  .play-btn{
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    background:var(--c4);
-    border:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  details summary{
     cursor:pointer;
-    flex-shrink:0;
-    box-shadow:0 0 14px rgba(191,129,88,0.7);
-    transition:transform .2s ease;
-  }
-  .play-btn:hover{ transform:scale(1.08); }
-  .play-btn svg{ width:14px; height:14px; fill:var(--c10); }
-
-  .track-info{
-    flex:1;
-    overflow:hidden;
-    position:relative;
-    height:18px;
-  }
-  .marquee{
-    position:absolute;
-    white-space:nowrap;
-    font-size:.78rem;
-    color:var(--c1);
-    letter-spacing:.5px;
-    animation:scrollLeft 12s linear infinite;
-  }
-  @keyframes scrollLeft{
-    0%{ transform:translateX(0%); }
-    100%{ transform:translateX(-50%); }
-  }
-
-  .vol-wrap{
-    position:relative;
-    flex-shrink:0;
-  }
-  .vol-btn{
-    width:26px;
-    height:26px;
-    border-radius:50%;
-    border:none;
-    background:transparent;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .vol-btn svg{ width:16px; height:16px; fill:var(--c2); }
-
-  .vol-popup{
-    position:absolute;
-    bottom:38px;
-    right:-4px;
-    background:rgba(54,41,32,0.9);
-    border:1px solid rgba(247,232,214,0.2);
-    border-radius:14px;
-    padding:12px 8px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    opacity:0;
-    pointer-events:none;
-    transform:translateY(6px);
-    transition:all .2s ease;
-    box-shadow:0 6px 20px rgba(0,0,0,0.5);
-  }
-  .vol-popup.show{
-    opacity:1;
-    pointer-events:auto;
-    transform:translateY(0);
-  }
-  .vol-slider{
-    -webkit-appearance:slider-vertical;
-    writing-mode:vertical-lr;
-    direction:rtl;
-    width:6px;
-    height:80px;
-    accent-color:var(--c4);
-    background:transparent;
-    cursor:pointer;
-  }
-  .vol-val{
-    font-size:.65rem;
+    font-size:.8rem;
     color:var(--c3);
+    margin-bottom:10px;
   }
 
-  /* ---------- responsive ---------- */
-  @media (max-width:820px){
-    .profile-card{padding:22px 18px;gap:10px;}
-    .avatar-ring{width:100px;height:100px;}
-    .name{font-size:1.5rem;}
-    .bio{font-size:.85rem;}
+  .note{
+    font-size:.75rem;
+    color:var(--c9);
+    line-height:1.5;
+    margin-top:6px;
+  }
+  .save-indicator{
+    font-size:.72rem;
+    color:var(--c3);
+    opacity:.8;
+  }
+
+  @media (max-width:900px){
+    .preview-col{ position:static; flex-basis:100%; }
+    .preview-frame-wrap{ height:520px; }
   }
 </style>
 </head>
 <body>
 
-<div id="stars"></div>
-<div class="glow-blob a"></div>
-<div class="glow-blob b"></div>
-<div class="glow-blob c"></div>
-
-<div class="stage">
-  <div class="layout">
-
-    <!-- BLOCO ÚNICO -->
-    <div class="glass profile-card" id="profileCard" style="opacity:0;transition:opacity .5s ease;">
-      <div class="avatar-ring">
-        <div class="avatar-inner">
-          <img id="avatarImg" src="" alt="foto de perfil">
-          <div class="avatar-shine"></div>
-        </div>
-      </div>
-      <div class="name-wrap">
-        <div class="name" id="nameText"></div>
-        <div class="name-shine" id="nameShine" aria-hidden="true"></div>
-      </div>
-      <div class="bio" id="bioText"></div>
-      <div class="tag-row" id="tagRow"></div>
-
-      <div class="divider"></div>
-
-      <div class="section">
-        <div class="block-title"><span class="pixel-icon"></span> Likes</div>
-        <div class="likes-list" id="likesList"></div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="section">
-        <div class="block-title"><span class="pixel-icon"></span> Links</div>
-        <div class="links-list" id="linksList"></div>
-      </div>
-
-      <div class="signature" id="signatureText"></div>
-    </div>
-
+<!-- ===================== LOGIN ===================== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>Painel Admin</h1>
+    <p>Digite a senha para editar seu perfil</p>
+    <input type="password" id="pwInput" placeholder="Senha" autocomplete="off">
+    <button id="pwBtn">Entrar</button>
+    <div id="loginError"></div>
   </div>
 </div>
 
-<!-- MUSIC PLAYER -->
-<div class="player">
-  <button class="play-btn" id="playBtn">
-    <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-  </button>
-
-  <div class="track-info">
-    <div class="marquee" id="marquee"></div>
+<!-- ===================== APP ===================== -->
+<div id="app">
+  <div class="topbar">
+    <h1>✏️ Editor do Perfil</h1>
+    <div class="actions">
+      <span class="save-indicator" id="saveIndicator">rascunho salvo neste navegador</span>
+      <label class="btn" for="importFile" style="margin:0;">Importar profile.html</label>
+      <input type="file" id="importFile" accept=".html" style="display:none;">
+      <button class="btn danger" id="resetBtn">Restaurar padrão</button>
+      <button class="btn primary" id="downloadBtn">⬇ Baixar profile.html</button>
+    </div>
   </div>
 
-  <div class="vol-wrap">
-    <button class="vol-btn" id="volBtn">
-      <svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-    </button>
-    <div class="vol-popup" id="volPopup">
-      <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="70">
-      <div class="vol-val" id="volVal">70%</div>
+  <div class="layout-wrap">
+    <div class="editor-col">
+
+      <div class="card" style="border-color:rgba(191,129,88,0.5);">
+        <h2>Como funciona</h2>
+        <p class="note">
+          Este site é estático (GitHub Pages), então não existe "salvar direto na internet".
+          Edite aqui à vontade — fica salvo automaticamente neste navegador como rascunho —
+          e quando quiser publicar, clique em <b>Baixar profile.html</b> e suba/substitua esse
+          arquivo no seu repositório do GitHub. A senha só bloqueia quem não sabe abrir este
+          arquivo localmente; como você disse que não há informação sensível, isso é suficiente.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Foto de perfil</h2>
+        <label>Enviar arquivo (fica embutido no site)</label>
+        <input type="file" id="avatarFile" accept="image/*">
+        <label>ou colar URL da imagem</label>
+        <input type="url" id="avatarUrl" placeholder="https://...">
+        <img id="avatarPreview" class="avatar-preview" src="">
+      </div>
+
+      <div class="card">
+        <h2>Nome e bio</h2>
+        <label>Nome</label>
+        <input type="text" id="fName" placeholder="Seu nome">
+        <label>Bio (Enter = quebra de linha)</label>
+        <textarea id="fBio" placeholder="Fale um pouco sobre você"></textarea>
+      </div>
+
+      <div class="card">
+        <h2>Tags</h2>
+        <div id="tagsList"></div>
+        <button class="add-btn" id="addTag">+ adicionar tag</button>
+      </div>
+
+      <div class="card">
+        <h2>Likes</h2>
+        <div id="likesListEl"></div>
+        <button class="add-btn" id="addLike">+ adicionar like</button>
+      </div>
+
+      <div class="card">
+        <h2>Links</h2>
+        <div id="linksListEl"></div>
+        <button class="add-btn" id="addLink">+ adicionar link</button>
+      </div>
+
+      <div class="card">
+        <h2>Música (player)</h2>
+        <label>Nome da faixa</label>
+        <input type="text" id="fTrackName" placeholder="Nome da música">
+        <label>URL do áudio (mp3)</label>
+        <input type="url" id="fTrackUrl" placeholder="https://.../musica.mp3">
+        <label>Volume inicial: <span id="volLabel">70%</span></label>
+        <input type="range" id="fVolume" min="0" max="100" value="70">
+      </div>
+
+      <div class="card">
+        <h2>Assinatura (rodapé)</h2>
+        <label>Texto (ex: seu nome)</label>
+        <input type="text" id="fSigName" placeholder="feito por...">
+        <label>Link da assinatura</label>
+        <input type="url" id="fSigUrl" placeholder="https://...">
+      </div>
+
+      <details class="card">
+        <summary>Cores (avançado)</summary>
+        <div class="colors-grid" id="colorsGrid"></div>
+      </details>
+
+    </div>
+
+    <div class="preview-col">
+      <div class="preview-frame-wrap">
+        <iframe id="previewFrame"></iframe>
+      </div>
+      <p class="note">Pré-visualização ao vivo. O tocador de música pode não autoplayar aqui dentro do iframe — normal, funciona no site publicado.</p>
     </div>
   </div>
 </div>
-
-<audio id="audio" loop></audio>
 
 <script>
-  // ==========================================================
-  // CONFIGURAÇÃO SUPABASE — preencha com os dados do seu projeto
-  // ==========================================================
-  const SUPABASE_URL = "https://rndhidaptqczkeowteqz.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_fGcCCNqOcXOY6FBcqXKYjg_t7W1qGUO";
+const ADMIN_PASSWORD = "Braw@#$55";
+const DRAFT_KEY = "profileAdminDraft_v1";
 
-  async function loadProfile(){
-    try{
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/profile?id=eq.1&select=*`, {
-        headers:{
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-        }
+const DEFAULT_DATA = {
+  colors: {
+    c1:"#f7e8d6", c2:"#f4dec2", c3:"#cead8d", c4:"#bf8158", c5:"#7c563a",
+    c6:"#6a4832", c7:"#9e846c", c8:"#85664f", c9:"#8a7d68", c10:"#362920",
+    c11:"#2F0000", c12:"#C79C83"
+  },
+  avatar_url: "https://i.pravatar.cc/300",
+  name: "Seu Nome",
+  bio: "Escreva aqui uma bio curta sobre você.<br>Use o painel admin para editar tudo isso.",
+  tags: ["tag um", "tag dois", "tag três"],
+  likes: ["Coisa que você curte", "Outra coisa que você curte"],
+  links: [
+    { label:"Instagram", url:"https://instagram.com/seuuser", icon:"" },
+    { label:"GitHub", url:"https://github.com/seuuser", icon:"" }
+  ],
+  signature_name: "seu nome",
+  signature_url: "https://github.com/seuuser",
+  track_name: "Nome da música",
+  track_url: "",
+  volume: 70
+};
+
+let state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+/* ---------------- login ---------------- */
+const loginScreen = document.getElementById('loginScreen');
+const appEl = document.getElementById('app');
+const pwInput = document.getElementById('pwInput');
+const pwBtn = document.getElementById('pwBtn');
+const loginError = document.getElementById('loginError');
+
+function tryLogin(){
+  if(pwInput.value === ADMIN_PASSWORD){
+    sessionStorage.setItem('profileAdminAuth', '1');
+    loginScreen.style.display = 'none';
+    appEl.style.display = 'block';
+    initApp();
+  } else {
+    loginError.textContent = 'Senha incorreta.';
+  }
+}
+pwBtn.addEventListener('click', tryLogin);
+pwInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryLogin(); });
+
+if(sessionStorage.getItem('profileAdminAuth') === '1'){
+  loginScreen.style.display = 'none';
+  appEl.style.display = 'block';
+  initApp();
+}
+
+/* ---------------- app init ---------------- */
+function initApp(){
+  const saved = localStorage.getItem(DRAFT_KEY);
+  if(saved){
+    try{ state = JSON.parse(saved); }catch(e){}
+  }
+  renderForm();
+  updatePreview();
+}
+
+/* ---------------- helpers ---------------- */
+function fileToBase64(file, cb){
+  const reader = new FileReader();
+  reader.onload = () => cb(reader.result);
+  reader.readAsDataURL(file);
+}
+function saveDraft(){
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+  const ind = document.getElementById('saveIndicator');
+  ind.textContent = 'rascunho salvo às ' + new Date().toLocaleTimeString('pt-BR');
+}
+function debounce(fn, ms){
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+const debouncedUpdate = debounce(() => { updatePreview(); saveDraft(); }, 250);
+
+/* ---------------- render form fields ---------------- */
+function renderForm(){
+  document.getElementById('avatarUrl').value = state.avatar_url || '';
+  document.getElementById('avatarPreview').src = state.avatar_url || '';
+  document.getElementById('fName').value = state.name || '';
+  document.getElementById('fBio').value = (state.bio || '').replace(/<br\s*\/?>/gi, '\n');
+  document.getElementById('fTrackName').value = state.track_name || '';
+  document.getElementById('fTrackUrl').value = state.track_url || '';
+  document.getElementById('fVolume').value = state.volume ?? 70;
+  document.getElementById('volLabel').textContent = (state.volume ?? 70) + '%';
+  document.getElementById('fSigName').value = state.signature_name || '';
+  document.getElementById('fSigUrl').value = state.signature_url || '';
+
+  renderSimpleList('tagsList', state.tags, 'tag');
+  renderSimpleList('likesListEl', state.likes, 'like');
+  renderLinksList();
+  renderColors();
+}
+
+function renderSimpleList(containerId, arr, placeholder){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  arr.forEach((val, i) => {
+    const row = document.createElement('div');
+    row.className = 'list-item';
+    row.innerHTML = `<input type="text" value="${escapeAttr(val)}" placeholder="${placeholder}"><button class="rm" title="remover">✕</button>`;
+    const input = row.querySelector('input');
+    input.addEventListener('input', () => { arr[i] = input.value; debouncedUpdate(); });
+    row.querySelector('.rm').addEventListener('click', () => {
+      arr.splice(i, 1);
+      renderForm(); updatePreview(); saveDraft();
+    });
+    el.appendChild(row);
+  });
+}
+
+function renderLinksList(){
+  const el = document.getElementById('linksListEl');
+  el.innerHTML = '';
+  state.links.forEach((link, i) => {
+    const row = document.createElement('div');
+    row.className = 'link-row';
+    row.innerHTML = `
+      <div class="list-item">
+        <input type="text" data-f="label" value="${escapeAttr(link.label)}" placeholder="Texto do link (ex: Instagram)">
+        <button class="rm" title="remover">✕</button>
+      </div>
+      <div class="list-item">
+        <input type="url" data-f="url" value="${escapeAttr(link.url)}" placeholder="https://...">
+      </div>
+      <div class="list-item">
+        <input type="url" data-f="icon" value="${escapeAttr(link.icon || '')}" placeholder="URL do ícone (opcional)">
+      </div>
+    `;
+    row.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        link[inp.dataset.f] = inp.value;
+        debouncedUpdate();
       });
-      const rows = await res.json();
-      const data = rows[0];
-      if(data) renderProfile(data);
-    } catch(err){
-      console.error("Não foi possível carregar o perfil:", err);
-    } finally {
-      document.getElementById('profileCard').style.opacity = 1;
-    }
-  }
-
-  function renderProfile(data){
-    // cores
-    if(data.colors){
-      const root = document.documentElement.style;
-      Object.entries(data.colors).forEach(([key, val]) => {
-        root.setProperty(`--${key}`, val);
-      });
-    }
-
-    // avatar
-    document.getElementById('avatarImg').src = data.avatar_url || '';
-
-    // nome (com camada de shine igual)
-    document.getElementById('nameText').textContent = data.name || '';
-    document.getElementById('nameShine').textContent = data.name || '';
-    document.title = data.name || '';
-
-    // bio (permite <br>)
-    document.getElementById('bioText').innerHTML = data.bio || '';
-
-    // tags
-    const tagRow = document.getElementById('tagRow');
-    tagRow.innerHTML = '';
-    (data.tags || []).forEach(tag => {
-      const span = document.createElement('span');
-      span.className = 'tag';
-      span.textContent = tag;
-      tagRow.appendChild(span);
     });
-
-    // likes
-    const likesList = document.getElementById('likesList');
-    likesList.innerHTML = '';
-    (data.likes || []).forEach(like => {
-      const div = document.createElement('div');
-      div.textContent = like;
-      likesList.appendChild(div);
+    row.querySelector('.rm').addEventListener('click', () => {
+      state.links.splice(i, 1);
+      renderForm(); updatePreview(); saveDraft();
     });
+    el.appendChild(row);
+  });
+}
 
-    // links
-    const linksList = document.getElementById('linksList');
-    linksList.innerHTML = '';
-    (data.links || []).forEach(link => {
-      const a = document.createElement('a');
-      a.className = 'link-item';
-      a.href = link.url;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.innerHTML = `
-        <span class="link-label">
-          ${link.icon ? `<img class="link-icon" src="${link.icon}" alt="">` : ''}
-          ${link.label}
-        </span>
-        <span class="arrow">→</span>
-      `;
-      linksList.appendChild(a);
+function renderColors(){
+  const grid = document.getElementById('colorsGrid');
+  grid.innerHTML = '';
+  Object.keys(state.colors).forEach(key => {
+    const item = document.createElement('div');
+    item.className = 'color-item';
+    item.innerHTML = `<label>${key}</label><input type="color" value="${state.colors[key]}">`;
+    item.querySelector('input').addEventListener('input', (e) => {
+      state.colors[key] = e.target.value;
+      debouncedUpdate();
     });
+    grid.appendChild(item);
+  });
+}
 
-    // assinatura
-    const sig = document.getElementById('signatureText');
-    sig.innerHTML = `Feito por <a href="${data.signature_url}" target="_blank" rel="noopener">${data.signature_name}</a>`;
+function escapeAttr(str){
+  return String(str || '').replace(/"/g, '&quot;');
+}
 
-    // player
-    const marquee = document.getElementById('marquee');
-    const trackText = `${data.track_name} &nbsp;&nbsp;•&nbsp;&nbsp; ${data.track_name} &nbsp;&nbsp;•&nbsp;&nbsp;`;
-    marquee.innerHTML = trackText;
+/* ---------------- field listeners ---------------- */
+document.getElementById('avatarUrl').addEventListener('input', (e) => {
+  state.avatar_url = e.target.value;
+  document.getElementById('avatarPreview').src = e.target.value;
+  debouncedUpdate();
+});
+document.getElementById('avatarFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  fileToBase64(file, (dataUrl) => {
+    state.avatar_url = dataUrl;
+    document.getElementById('avatarUrl').value = '';
+    document.getElementById('avatarPreview').src = dataUrl;
+    updatePreview(); saveDraft();
+  });
+});
+document.getElementById('fName').addEventListener('input', (e) => { state.name = e.target.value; debouncedUpdate(); });
+document.getElementById('fBio').addEventListener('input', (e) => {
+  state.bio = e.target.value.replace(/\n/g, '<br>');
+  debouncedUpdate();
+});
+document.getElementById('fTrackName').addEventListener('input', (e) => { state.track_name = e.target.value; debouncedUpdate(); });
+document.getElementById('fTrackUrl').addEventListener('input', (e) => { state.track_url = e.target.value; debouncedUpdate(); });
+document.getElementById('fVolume').addEventListener('input', (e) => {
+  state.volume = parseInt(e.target.value, 10);
+  document.getElementById('volLabel').textContent = state.volume + '%';
+  debouncedUpdate();
+});
+document.getElementById('fSigName').addEventListener('input', (e) => { state.signature_name = e.target.value; debouncedUpdate(); });
+document.getElementById('fSigUrl').addEventListener('input', (e) => { state.signature_url = e.target.value; debouncedUpdate(); });
 
-    const audio = document.getElementById('audio');
-    audio.innerHTML = `<source src="${data.track_url}" type="audio/mpeg">`;
-    audio.load();
-    const vol = (data.volume ?? 70);
-    audio.volume = vol / 100;
-    document.getElementById('volSlider').value = vol;
-    document.getElementById('volVal').textContent = vol + '%';
+document.getElementById('addTag').addEventListener('click', () => { state.tags.push('nova tag'); renderForm(); updatePreview(); saveDraft(); });
+document.getElementById('addLike').addEventListener('click', () => { state.likes.push('novo like'); renderForm(); updatePreview(); saveDraft(); });
+document.getElementById('addLink').addEventListener('click', () => { state.links.push({label:'Novo link', url:'https://', icon:''}); renderForm(); updatePreview(); saveDraft(); });
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(confirm('Restaurar tudo para o padrão? Isso apaga o rascunho salvo.')){
+    state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    renderForm(); updatePreview(); saveDraft();
   }
+});
 
-  // ---------- pixel stars generator ----------
-  const starsContainer = document.getElementById('stars');
-  const STAR_COUNT = 90;
-  for(let i=0;i<STAR_COUNT;i++){
-    const s = document.createElement('div');
-    s.className = 'pixel-star';
-    s.style.left = Math.random()*100 + 'vw';
-    s.style.top = Math.random()*100 + 'vh';
-    s.style.animationDelay = (Math.random()*3.5) + 's';
-    s.style.animationDuration = (2.5 + Math.random()*3) + 's';
-    starsContainer.appendChild(s);
-  }
-
-  // ---------- player logic ----------
-  const audio = document.getElementById('audio');
-  const playBtn = document.getElementById('playBtn');
-  const playIcon = document.getElementById('playIcon');
-  const volBtn = document.getElementById('volBtn');
-  const volPopup = document.getElementById('volPopup');
-  const volSlider = document.getElementById('volSlider');
-  const volVal = document.getElementById('volVal');
-
-  const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
-  const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
-
-  let isPlaying = false;
-
-  function startPlaying(){
-    audio.play().then(() => {
-      isPlaying = true;
-      playIcon.innerHTML = ICON_PAUSE;
-    }).catch(() => {
-      // autoplay bloqueado pelo navegador — aguarda interação do usuário
-      isPlaying = false;
-      playIcon.innerHTML = ICON_PLAY;
-    });
-  }
-
-  // tenta autoplay assim que o perfil (e a faixa) estiverem carregados
-  // (chamado no final do script, depois que loadProfile() roda)
-
-  // se o navegador bloquear, inicia no primeiro clique/toque em qualquer lugar
-  function firstInteraction(){
-    if(!isPlaying){ startPlaying(); }
-    document.removeEventListener('click', firstInteraction);
-    document.removeEventListener('touchstart', firstInteraction);
-  }
-  document.addEventListener('click', firstInteraction);
-  document.addEventListener('touchstart', firstInteraction);
-
-  playBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if(isPlaying){
-      audio.pause();
-      playIcon.innerHTML = ICON_PLAY;
-      isPlaying = false;
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const match = reader.result.match(/const PROFILE_DATA = (\{[\s\S]*?\});/);
+    if(match){
+      try{
+        state = JSON.parse(match[1]);
+        renderForm(); updatePreview(); saveDraft();
+        alert('Dados importados com sucesso!');
+      }catch(err){
+        alert('Não consegui ler os dados desse arquivo.');
+      }
     } else {
-      audio.play().catch(()=>{});
-      playIcon.innerHTML = ICON_PAUSE;
-      isPlaying = true;
+      alert('Não encontrei os dados do perfil nesse arquivo.');
     }
-  });
+  };
+  reader.readAsText(file);
+});
 
-  volBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    volPopup.classList.toggle('show');
-  });
-  document.addEventListener('click', (e) => {
-    if(!volPopup.contains(e.target) && e.target !== volBtn){
-      volPopup.classList.remove('show');
-    }
-  });
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const html = buildFinalHTML(state);
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'profile.html';
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
-  volSlider.addEventListener('input', () => {
-    const v = volSlider.value;
-    audio.volume = v / 100;
-    volVal.textContent = v + '%';
-  });
+/* ---------------- preview ---------------- */
+function updatePreview(){
+  const html = buildFinalHTML(state);
+  document.getElementById('previewFrame').srcdoc = html;
+}
 
-  // ---------- carrega os dados do Supabase ----------
-  loadProfile().then(startPlaying);
+/* ---------------- build final static HTML ---------------- */
+function buildFinalHTML(data){
+  return TEMPLATE_HEAD + JSON.stringify(data, null, 2) + TEMPLATE_TAIL;
+}
+
+const TEMPLATE_HEAD = "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>\u026e\u0634\u0645\u062c</title>\n<style>\n  :root{\n    --c1:#f7e8d6;\n    --c2:#f4dec2;\n    --c3:#cead8d;\n    --c4:#bf8158;\n    --c5:#7c563a;\n    --c6:#6a4832;\n    --c7:#9e846c;\n    --c8:#85664f;\n    --c9:#8a7d68;\n    --c10:#362920;\n    --c11:#2F0000;\n    --c12:#C79C83;\n  }\n  *{margin:0;padding:0;box-sizing:border-box;}\n  html,body{\n    height:100%;\n    width:100%;\n    overflow:hidden;\n    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;\n    background:\n      radial-gradient(circle at 15% 15%, var(--c11) 0%, transparent 55%),\n      radial-gradient(circle at 85% 20%, var(--c6) 0%, transparent 50%),\n      radial-gradient(circle at 50% 90%, var(--c11) 0%, transparent 60%),\n      linear-gradient(160deg, var(--c11) 0%, var(--c10) 45%, var(--c6) 100%);\n    color:var(--c1);\n    position:relative;\n  }\n\n  /* ---------- pixel stars ---------- */\n  #stars{\n    position:fixed;\n    inset:0;\n    pointer-events:none;\n    z-index:0;\n  }\n  .pixel-star{\n    position:absolute;\n    width:3px;\n    height:3px;\n    background:var(--c2);\n    image-rendering:pixelated;\n    box-shadow:0 0 4px 1px rgba(247,232,214,0.5);\n    animation:twinkle 3.5s ease-in-out infinite;\n  }\n  @keyframes twinkle{\n    0%,100%{opacity:.15;}\n    50%{opacity:1;}\n  }\n\n  /* ---------- glow blobs ---------- */\n  .glow-blob{\n    position:fixed;\n    border-radius:50%;\n    filter:blur(70px);\n    opacity:.35;\n    z-index:0;\n    pointer-events:none;\n  }\n  .glow-blob.a{width:380px;height:380px;background:var(--c4);top:-100px;left:-100px;}\n  .glow-blob.b{width:420px;height:420px;background:var(--c5);bottom:-150px;right:-120px;}\n  .glow-blob.c{width:300px;height:300px;background:var(--c12);top:40%;left:50%;transform:translate(-50%,-50%);opacity:.15;}\n\n  /* ---------- layout ---------- */\n  .stage{\n    position:relative;\n    z-index:2;\n    height:100vh;\n    width:100vw;\n    display:flex;\n    align-items:center;\n    justify-content:center;\n    padding:3vh 3vw;\n  }\n\n  .layout{\n    width:100%;\n    max-width:640px;\n    height:100%;\n    max-height:660px;\n    display:flex;\n  }\n\n  .glass{\n    background:linear-gradient(155deg, rgba(247,232,214,0.08), rgba(54,41,32,0.35));\n    backdrop-filter:blur(18px);\n    -webkit-backdrop-filter:blur(18px);\n    border:1px solid rgba(247,232,214,0.18);\n    border-radius:22px;\n    box-shadow:\n      0 8px 32px rgba(0,0,0,0.45),\n      inset 0 1px 0 rgba(255,255,255,0.06);\n    position:relative;\n    overflow:hidden;\n  }\n  .glass::before{\n    content:\"\";\n    position:absolute;\n    top:-40%;left:-20%;\n    width:140%;height:140%;\n    background:radial-gradient(circle at top left, rgba(247,232,214,0.10), transparent 60%);\n    pointer-events:none;\n  }\n\n  /* ---------- profile card ---------- */\n  .profile-card{\n    display:flex;\n    flex-direction:column;\n    align-items:center;\n    justify-content:center;\n    padding:34px 30px 26px;\n    text-align:center;\n    gap:12px;\n    width:100%;\n  }\n\n  .avatar-ring{\n    width:150px;\n    height:150px;\n    border-radius:50%;\n    padding:5px;\n    background:conic-gradient(from 0deg, var(--c4), var(--c12), var(--c4));\n    box-shadow:\n      0 0 18px 2px rgba(191,129,88,0.6),\n      0 0 34px 6px rgba(199,156,131,0.35);\n    animation:ringGlow 3.2s ease-in-out infinite;\n    position:relative;\n  }\n  @keyframes ringGlow{\n    0%,100%{\n      box-shadow:\n        0 0 18px 2px rgba(191,129,88,0.55),\n        0 0 30px 6px rgba(199,156,131,0.3);\n    }\n    50%{\n      box-shadow:\n        0 0 26px 4px rgba(191,129,88,0.85),\n        0 0 46px 10px rgba(199,156,131,0.5);\n    }\n  }\n  .avatar-inner{\n    width:100%;\n    height:100%;\n    border-radius:50%;\n    overflow:hidden;\n    background:var(--c10);\n    border:3px solid var(--c11);\n    position:relative;\n  }\n  .avatar-inner img{\n    width:100%;\n    height:100%;\n    object-fit:cover;\n    display:block;\n  }\n\n  .avatar-shine{\n    position:absolute;\n    top:0;\n    left:-150%;\n    width:60%;\n    height:100%;\n    background:linear-gradient(\n      100deg,\n      transparent 0%,\n      rgba(255,255,255,0.05) 35%,\n      rgba(255,255,255,0.55) 50%,\n      rgba(255,255,255,0.05) 65%,\n      transparent 100%\n    );\n    transform:skewX(-20deg);\n    animation:photoShine 20s ease-in-out infinite;\n    pointer-events:none;\n  }\n  @keyframes photoShine{\n    0%{ left:-150%; }\n    10%{ left:150%; }\n    100%{ left:150%; }\n  }\n\n  .name-wrap{\n    position:relative;\n    display:inline-block;\n    margin-top:4px;\n  }\n  .name{\n    font-size:2.1rem;\n    font-weight:700;\n    letter-spacing:1px;\n    color:var(--c1);\n    text-shadow:0 0 12px rgba(199,156,131,0.4);\n    position:relative;\n  }\n\n  /* camada de brilho em degrad\u00ea deslizando por dentro do texto */\n  .name-shine{\n    position:absolute;\n    top:0;\n    left:0;\n    width:100%;\n    font-size:2.1rem;\n    font-weight:700;\n    letter-spacing:1px;\n    font-family:inherit;\n    white-space:nowrap;\n    pointer-events:none;\n    user-select:none;\n    background:linear-gradient(\n      100deg,\n      transparent 0%,\n      transparent 42%,\n      rgba(255,255,255,0.95) 50%,\n      transparent 58%,\n      transparent 100%\n    );\n    background-size:300% 100%;\n    -webkit-background-clip:text;\n    background-clip:text;\n    -webkit-text-fill-color:transparent;\n    color:transparent;\n    mix-blend-mode:screen;\n    animation:nameShine 4s linear infinite;\n  }\n  @keyframes nameShine{\n    0%{ background-position:150% 0; }\n    100%{ background-position:-150% 0; }\n  }\n\n  .bio{\n    font-size:.95rem;\n    color:var(--c2);\n    line-height:1.6;\n    max-width:340px;\n    opacity:.9;\n  }\n\n  .tag-row{\n    display:flex;\n    gap:8px;\n    flex-wrap:wrap;\n    justify-content:center;\n    margin-top:4px;\n  }\n  .tag{\n    font-size:.72rem;\n    letter-spacing:.5px;\n    padding:5px 12px;\n    border-radius:30px;\n    border:1px solid rgba(247,232,214,0.25);\n    background:rgba(255,255,255,0.04);\n    color:var(--c3);\n    text-transform:uppercase;\n  }\n\n  /* ---------- inner sections (dentro do bloco \u00fanico) ---------- */\n  .divider{\n    width:100%;\n    height:1px;\n    background:linear-gradient(90deg, transparent, rgba(247,232,214,0.25), transparent);\n    margin:6px 0;\n  }\n\n  .section{\n    width:100%;\n    display:flex;\n    flex-direction:column;\n    gap:10px;\n    align-items:center;\n  }\n\n  .block-title{\n    font-size:.82rem;\n    letter-spacing:1.5px;\n    text-transform:uppercase;\n    color:var(--c12);\n    display:flex;\n    align-items:center;\n    gap:8px;\n    font-weight:600;\n  }\n  .block-title .pixel-icon{\n    width:7px;height:7px;\n    background:var(--c4);\n    box-shadow:0 0 6px 2px rgba(191,129,88,0.7);\n  }\n\n  .likes-list{\n    display:flex;\n    flex-direction:column;\n    gap:6px;\n    font-size:.85rem;\n    color:var(--c2);\n    line-height:1.5;\n    text-align:center;\n  }\n  .likes-list span{\n    color:var(--c12);\n    font-weight:600;\n  }\n\n  .links-list{\n    display:flex;\n    flex-direction:column;\n    gap:8px;\n    width:100%;\n    max-width:320px;\n  }\n  .link-item{\n    display:flex;\n    align-items:center;\n    justify-content:space-between;\n    padding:16px 20px;\n    border-radius:14px;\n    background:rgba(255,255,255,0.04);\n    border:1px solid rgba(247,232,214,0.15);\n    color:var(--c1);\n    text-decoration:none;\n    font-size:.9rem;\n    transition:all .25s ease;\n  }\n  .link-item:hover{\n    background:rgba(191,129,88,0.18);\n    border-color:var(--c4);\n    transform:translateX(3px);\n  }\n  .link-item .arrow{color:var(--c4);}\n  .link-label{\n    display:flex;\n    align-items:center;\n    gap:10px;\n  }\n  .link-icon{\n    width:18px;\n    height:18px;\n    border-radius:4px;\n    object-fit:cover;\n    flex-shrink:0;\n  }\n\n  .signature{\n    text-align:center;\n    font-size:.65rem;\n    letter-spacing:1px;\n    color:var(--c9);\n    opacity:.7;\n    margin-top:2px;\n  }\n  .signature a{\n    color:var(--c12);\n    text-decoration:none;\n    border-bottom:1px solid rgba(199,156,131,0.4);\n    transition:color .2s ease, border-color .2s ease;\n  }\n  .signature a:hover{\n    color:var(--c1);\n    border-color:var(--c1);\n  }\n\n  /* ---------- music player ---------- */\n  .player{\n    position:absolute;\n    bottom:26px;\n    left:50%;\n    transform:translateX(-50%);\n    z-index:5;\n    display:flex;\n    align-items:center;\n    gap:12px;\n    padding:9px 16px 9px 9px;\n    border-radius:40px;\n    background:linear-gradient(120deg, rgba(54,41,32,0.75), rgba(106,72,50,0.55));\n    backdrop-filter:blur(16px);\n    -webkit-backdrop-filter:blur(16px);\n    border:1px solid rgba(247,232,214,0.2);\n    box-shadow:0 6px 24px rgba(0,0,0,0.5);\n    width:min(360px, 80vw);\n  }\n\n  .play-btn{\n    width:34px;\n    height:34px;\n    border-radius:50%;\n    background:var(--c4);\n    border:none;\n    display:flex;\n    align-items:center;\n    justify-content:center;\n    cursor:pointer;\n    flex-shrink:0;\n    box-shadow:0 0 14px rgba(191,129,88,0.7);\n    transition:transform .2s ease;\n  }\n  .play-btn:hover{ transform:scale(1.08); }\n  .play-btn svg{ width:14px; height:14px; fill:var(--c10); }\n\n  .track-info{\n    flex:1;\n    overflow:hidden;\n    position:relative;\n    height:18px;\n  }\n  .marquee{\n    position:absolute;\n    white-space:nowrap;\n    font-size:.78rem;\n    color:var(--c1);\n    letter-spacing:.5px;\n    animation:scrollLeft 12s linear infinite;\n  }\n  @keyframes scrollLeft{\n    0%{ transform:translateX(0%); }\n    100%{ transform:translateX(-50%); }\n  }\n\n  .vol-wrap{\n    position:relative;\n    flex-shrink:0;\n  }\n  .vol-btn{\n    width:26px;\n    height:26px;\n    border-radius:50%;\n    border:none;\n    background:transparent;\n    cursor:pointer;\n    display:flex;\n    align-items:center;\n    justify-content:center;\n  }\n  .vol-btn svg{ width:16px; height:16px; fill:var(--c2); }\n\n  .vol-popup{\n    position:absolute;\n    bottom:38px;\n    right:-4px;\n    background:rgba(54,41,32,0.9);\n    border:1px solid rgba(247,232,214,0.2);\n    border-radius:14px;\n    padding:12px 8px;\n    display:flex;\n    flex-direction:column;\n    align-items:center;\n    gap:6px;\n    opacity:0;\n    pointer-events:none;\n    transform:translateY(6px);\n    transition:all .2s ease;\n    box-shadow:0 6px 20px rgba(0,0,0,0.5);\n  }\n  .vol-popup.show{\n    opacity:1;\n    pointer-events:auto;\n    transform:translateY(0);\n  }\n  .vol-slider{\n    -webkit-appearance:slider-vertical;\n    writing-mode:vertical-lr;\n    direction:rtl;\n    width:6px;\n    height:80px;\n    accent-color:var(--c4);\n    background:transparent;\n    cursor:pointer;\n  }\n  .vol-val{\n    font-size:.65rem;\n    color:var(--c3);\n  }\n\n  /* ---------- responsive ---------- */\n  @media (max-width:820px){\n    .profile-card{padding:22px 18px;gap:10px;}\n    .avatar-ring{width:100px;height:100px;}\n    .name{font-size:1.5rem;}\n    .bio{font-size:.85rem;}\n  }\n</style>\n</head>\n<body>\n\n<div id=\"stars\"></div>\n<div class=\"glow-blob a\"></div>\n<div class=\"glow-blob b\"></div>\n<div class=\"glow-blob c\"></div>\n\n<div class=\"stage\">\n  <div class=\"layout\">\n\n    <!-- BLOCO \u00daNICO -->\n    <div class=\"glass profile-card\" id=\"profileCard\" style=\"opacity:0;transition:opacity .5s ease;\">\n      <div class=\"avatar-ring\">\n        <div class=\"avatar-inner\">\n          <img id=\"avatarImg\" src=\"\" alt=\"foto de perfil\">\n          <div class=\"avatar-shine\"></div>\n        </div>\n      </div>\n      <div class=\"name-wrap\">\n        <div class=\"name\" id=\"nameText\"></div>\n        <div class=\"name-shine\" id=\"nameShine\" aria-hidden=\"true\"></div>\n      </div>\n      <div class=\"bio\" id=\"bioText\"></div>\n      <div class=\"tag-row\" id=\"tagRow\"></div>\n\n      <div class=\"divider\"></div>\n\n      <div class=\"section\">\n        <div class=\"block-title\"><span class=\"pixel-icon\"></span> Likes</div>\n        <div class=\"likes-list\" id=\"likesList\"></div>\n      </div>\n\n      <div class=\"divider\"></div>\n\n      <div class=\"section\">\n        <div class=\"block-title\"><span class=\"pixel-icon\"></span> Links</div>\n        <div class=\"links-list\" id=\"linksList\"></div>\n      </div>\n\n      <div class=\"signature\" id=\"signatureText\"></div>\n    </div>\n\n  </div>\n</div>\n\n<!-- MUSIC PLAYER -->\n<div class=\"player\">\n  <button class=\"play-btn\" id=\"playBtn\">\n    <svg id=\"playIcon\" viewBox=\"0 0 24 24\"><path d=\"M8 5v14l11-7z\"/></svg>\n  </button>\n\n  <div class=\"track-info\">\n    <div class=\"marquee\" id=\"marquee\"></div>\n  </div>\n\n  <div class=\"vol-wrap\">\n    <button class=\"vol-btn\" id=\"volBtn\">\n      <svg viewBox=\"0 0 24 24\"><path d=\"M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z\"/></svg>\n    </button>\n    <div class=\"vol-popup\" id=\"volPopup\">\n      <input type=\"range\" class=\"vol-slider\" id=\"volSlider\" min=\"0\" max=\"100\" value=\"70\">\n      <div class=\"vol-val\" id=\"volVal\">70%</div>\n    </div>\n  </div>\n</div>\n\n<audio id=\"audio\" loop></audio>\n\n<script>\n  // ==========================================================\n  // DADOS DO PERFIL \u2014 edite aqui manualmente OU use o admin.html\n  // (o admin.html gera este bloco pra voc\u00ea, sem precisar mexer em c\u00f3digo)\n  // ==========================================================\n  const PROFILE_DATA = ";
+const TEMPLATE_TAIL = ";\n\n  function renderProfile(data){\n    // cores\n    if(data.colors){\n      const root = document.documentElement.style;\n      Object.entries(data.colors).forEach(([key, val]) => {\n        root.setProperty(`--${key}`, val);\n      });\n    }\n\n    // avatar\n    document.getElementById('avatarImg').src = data.avatar_url || '';\n\n    // nome (com camada de shine igual)\n    document.getElementById('nameText').textContent = data.name || '';\n    document.getElementById('nameShine').textContent = data.name || '';\n    document.title = data.name || '';\n\n    // bio (permite <br>)\n    document.getElementById('bioText').innerHTML = data.bio || '';\n\n    // tags\n    const tagRow = document.getElementById('tagRow');\n    tagRow.innerHTML = '';\n    (data.tags || []).forEach(tag => {\n      const span = document.createElement('span');\n      span.className = 'tag';\n      span.textContent = tag;\n      tagRow.appendChild(span);\n    });\n\n    // likes\n    const likesList = document.getElementById('likesList');\n    likesList.innerHTML = '';\n    (data.likes || []).forEach(like => {\n      const div = document.createElement('div');\n      div.textContent = like;\n      likesList.appendChild(div);\n    });\n\n    // links\n    const linksList = document.getElementById('linksList');\n    linksList.innerHTML = '';\n    (data.links || []).forEach(link => {\n      const a = document.createElement('a');\n      a.className = 'link-item';\n      a.href = link.url;\n      a.target = '_blank';\n      a.rel = 'noopener';\n      a.innerHTML = `\n        <span class=\"link-label\">\n          ${link.icon ? `<img class=\"link-icon\" src=\"${link.icon}\" alt=\"\">` : ''}\n          ${link.label}\n        </span>\n        <span class=\"arrow\">\u2192</span>\n      `;\n      linksList.appendChild(a);\n    });\n\n    // assinatura\n    const sig = document.getElementById('signatureText');\n    if(data.signature_name){\n      sig.innerHTML = `Feito por <a href=\"${data.signature_url || '#'}\" target=\"_blank\" rel=\"noopener\">${data.signature_name}</a>`;\n    }\n\n    // player\n    const marquee = document.getElementById('marquee');\n    const trackText = `${data.track_name || ''} &nbsp;&nbsp;\u2022&nbsp;&nbsp; ${data.track_name || ''} &nbsp;&nbsp;\u2022&nbsp;&nbsp;`;\n    marquee.innerHTML = trackText;\n\n    const audio = document.getElementById('audio');\n    if(data.track_url){\n      audio.innerHTML = `<source src=\"${data.track_url}\" type=\"audio/mpeg\">`;\n      audio.load();\n    }\n    const vol = (data.volume ?? 70);\n    audio.volume = vol / 100;\n    document.getElementById('volSlider').value = vol;\n    document.getElementById('volVal').textContent = vol + '%';\n\n    document.getElementById('profileCard').style.opacity = 1;\n  }\n\n  // ---------- pixel stars generator ----------\n  const starsContainer = document.getElementById('stars');\n  const STAR_COUNT = 90;\n  for(let i=0;i<STAR_COUNT;i++){\n    const s = document.createElement('div');\n    s.className = 'pixel-star';\n    s.style.left = Math.random()*100 + 'vw';\n    s.style.top = Math.random()*100 + 'vh';\n    s.style.animationDelay = (Math.random()*3.5) + 's';\n    s.style.animationDuration = (2.5 + Math.random()*3) + 's';\n    starsContainer.appendChild(s);\n  }\n\n  // ---------- player logic ----------\n  const audio = document.getElementById('audio');\n  const playBtn = document.getElementById('playBtn');\n  const playIcon = document.getElementById('playIcon');\n  const volBtn = document.getElementById('volBtn');\n  const volPopup = document.getElementById('volPopup');\n  const volSlider = document.getElementById('volSlider');\n  const volVal = document.getElementById('volVal');\n\n  const ICON_PLAY = '<path d=\"M8 5v14l11-7z\"/>';\n  const ICON_PAUSE = '<path d=\"M6 5h4v14H6zM14 5h4v14h-4z\"/>';\n\n  let isPlaying = false;\n\n  function startPlaying(){\n    audio.play().then(() => {\n      isPlaying = true;\n      playIcon.innerHTML = ICON_PAUSE;\n    }).catch(() => {\n      isPlaying = false;\n      playIcon.innerHTML = ICON_PLAY;\n    });\n  }\n\n  function firstInteraction(){\n    if(!isPlaying){ startPlaying(); }\n    document.removeEventListener('click', firstInteraction);\n    document.removeEventListener('touchstart', firstInteraction);\n  }\n  document.addEventListener('click', firstInteraction);\n  document.addEventListener('touchstart', firstInteraction);\n\n  playBtn.addEventListener('click', (e) => {\n    e.stopPropagation();\n    if(isPlaying){\n      audio.pause();\n      playIcon.innerHTML = ICON_PLAY;\n      isPlaying = false;\n    } else {\n      audio.play().catch(()=>{});\n      playIcon.innerHTML = ICON_PAUSE;\n      isPlaying = true;\n    }\n  });\n\n  volBtn.addEventListener('click', (e) => {\n    e.stopPropagation();\n    volPopup.classList.toggle('show');\n  });\n  document.addEventListener('click', (e) => {\n    if(!volPopup.contains(e.target) && e.target !== volBtn){\n      volPopup.classList.remove('show');\n    }\n  });\n\n  volSlider.addEventListener('input', () => {\n    const v = volSlider.value;\n    audio.volume = v / 100;\n    volVal.textContent = v + '%';\n  });\n\n  // ---------- inicializa ----------\n  renderProfile(PROFILE_DATA);\n  startPlaying();\n</script>\n\n</body>\n</html>\n";
 </script>
-
 </body>
 </html>
