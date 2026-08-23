@@ -848,31 +848,54 @@
   const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 
   let isPlaying = false;
+  let unmuteTimer = null;
 
   function startPlaying(){
+    if(isPlaying) return; // já está tocando, evita tentativas duplicadas
     // começa mudo (autoplay é liberado pelos navegadores quando muted)
     audio.muted = true;
-    audio.play().then(() => {
-      isPlaying = true;
-      playIcon.innerHTML = ICON_PAUSE;
-      // desmuta após 3 segundos
-      setTimeout(() => {
-        audio.muted = false;
-      }, 3000);
-    }).catch(() => {
-      // autoplay bloqueado pelo navegador — aguarda interação do usuário
-      audio.muted = false;
-      isPlaying = false;
-      playIcon.innerHTML = ICON_PLAY;
-    });
+    const playPromise = audio.play();
+    if(playPromise !== undefined){
+      playPromise.then(() => {
+        isPlaying = true;
+        playIcon.innerHTML = ICON_PAUSE;
+        // desmuta após 3 segundos
+        clearTimeout(unmuteTimer);
+        unmuteTimer = setTimeout(() => {
+          audio.muted = false;
+        }, 3000);
+      }).catch((err) => {
+        // autoplay bloqueado — vai tentar de novo em outros gatilhos (load, canplay, interação)
+        console.warn('Autoplay ainda bloqueado, tentando novamente:', err);
+        isPlaying = false;
+        playIcon.innerHTML = ICON_PLAY;
+      });
+    }
   }
 
-  // tenta autoplay assim que o perfil (e a faixa) estiverem carregados
-  // (chamado no final do script, depois que loadProfile() roda)
+  // tenta assim que o script roda
+  startPlaying();
 
-  // se o navegador bloquear, inicia no primeiro clique/toque em qualquer lugar
+  // tenta de novo quando a faixa estiver pronta para tocar
+  audio.addEventListener('canplay', () => { if(!isPlaying) startPlaying(); });
+
+  // tenta de novo quando a página (imagens, fontes, etc.) terminar de carregar totalmente
+  window.addEventListener('load', () => { if(!isPlaying) startPlaying(); });
+
+  // tenta de novo se a aba ficar visível (ex: usuário trocou de aba e voltou)
+  document.addEventListener('visibilitychange', () => {
+    if(!document.hidden && !isPlaying) startPlaying();
+  });
+
+  // último recurso: qualquer clique/toque na página força o play com som
   function firstInteraction(){
-    if(!isPlaying){ startPlaying(); }
+    if(!isPlaying){
+      audio.muted = false;
+      audio.play().then(() => {
+        isPlaying = true;
+        playIcon.innerHTML = ICON_PAUSE;
+      }).catch(()=>{});
+    }
     document.removeEventListener('click', firstInteraction);
     document.removeEventListener('touchstart', firstInteraction);
   }
@@ -928,9 +951,6 @@
 
   // ---------- carrega os dados do Supabase (nome, bio, links, volume, etc.) ----------
   loadProfile();
-
-  // ---------- inicia a reprodução automática (independe do Supabase) ----------
-  startPlaying();
 </script>
 
 </body>
