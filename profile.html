@@ -29,44 +29,15 @@
     position:relative;
   }
 
-  /* ---------- animated mesh background ---------- */
-  #mesh-bg{
+  /* ---------- background gif ---------- */
+  #bg-gif{
     position:fixed;
-    inset:-10%;
-    width:120%;
-    height:120%;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
     z-index:-1;
-    background:
-      radial-gradient(circle at 15% 15%, var(--c11) 0%, transparent 55%),
-      radial-gradient(circle at 85% 20%, var(--c6) 0%, transparent 50%),
-      radial-gradient(circle at 50% 90%, var(--c11) 0%, transparent 60%),
-      linear-gradient(160deg, var(--c11) 0%, var(--c10) 45%, var(--c6) 100%);
-    background-size:180% 180%;
-    background-repeat:no-repeat;
-    animation:meshDrift 9s ease-in-out infinite alternate;
-    will-change:background-position, transform;
-  }
-  @keyframes meshDrift{
-    0%{
-      background-position:0% 0%;
-      transform:scale(1) rotate(0deg);
-    }
-    25%{
-      background-position:70% 20%;
-      transform:scale(1.08) rotate(2deg);
-    }
-    50%{
-      background-position:100% 70%;
-      transform:scale(1.15) rotate(-2deg);
-    }
-    75%{
-      background-position:20% 100%;
-      transform:scale(1.08) rotate(2deg);
-    }
-    100%{
-      background-position:0% 0%;
-      transform:scale(1) rotate(0deg);
-    }
   }
 
   /* ---------- pixel stars ---------- */
@@ -641,7 +612,7 @@
 </head>
 <body>
 
-<div id="mesh-bg"></div>
+<img id="bg-gif" src="https://xatimg.com/image/Cdofct1EeBj7.gif" alt="">
 <div id="stars"></div>
 <div class="glow-blob a"></div>
 <div class="glow-blob b"></div>
@@ -845,10 +816,10 @@
 
   // ---------- playlist (arquivos mp3 no mesmo repositório do GitHub) ----------
   const PLAYLIST = [
+    { name: "HUGEL - Movin' To The Sun", src: "HUGEL - Movin' To The Sun (Lyrics) - OnLyrics (youtube).mp3" },
     { name: "Única - Duquesa", src: "Única - Duquesa (youtube).mp3" },
     { name: "Kehlani - Folded", src: "Kehlani - Folded  A COLORS SHOW - COLORS (youtube).mp3" },
-    { name: "Marian Hill - Lips", src: "Marian Hill - Lips (Audio) - MarianHillVEVO (youtube).mp3" },
-    { name: "HUGEL - Movin' To The Sun", src: "HUGEL - Movin' To The Sun (Lyrics) - OnLyrics (youtube).mp3" }
+    { name: "Marian Hill - Lips", src: "Marian Hill - Lips (Audio) - MarianHillVEVO (youtube).mp3" }
   ];
   let currentTrack = 0;
 
@@ -873,11 +844,18 @@
   let isPlaying = false;
 
   function startPlaying(){
+    // começa mudo (autoplay é liberado pelos navegadores quando muted)
+    audio.muted = true;
     audio.play().then(() => {
       isPlaying = true;
       playIcon.innerHTML = ICON_PAUSE;
+      // desmuta após 3 segundos
+      setTimeout(() => {
+        audio.muted = false;
+      }, 3000);
     }).catch(() => {
       // autoplay bloqueado pelo navegador — aguarda interação do usuário
+      audio.muted = false;
       isPlaying = false;
       playIcon.innerHTML = ICON_PLAY;
     });
