@@ -690,7 +690,7 @@
   </div>
 </div>
 
-<audio id="audio"></audio>
+<audio id="audio" muted playsinline preload="auto"></audio>
 
 <script>
   // ==========================================================
@@ -836,6 +836,12 @@
     if(isPlaying){ audio.play().catch(()=>{}); }
   });
 
+  // ajuda a diagnosticar caso o arquivo de áudio não seja encontrado (nome/caminho errado)
+  audio.addEventListener('error', () => {
+    console.error('Erro ao carregar a faixa de áudio:', audio.src, audio.error);
+  });
+
+  audio.muted = true; // garante estado mudo desde o início, antes de qualquer tentativa de autoplay
   loadTrack(0);
 
   const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
@@ -920,8 +926,11 @@
     volVal.textContent = v + '%';
   });
 
-  // ---------- carrega os dados do Supabase ----------
-  loadProfile().then(startPlaying);
+  // ---------- carrega os dados do Supabase (nome, bio, links, volume, etc.) ----------
+  loadProfile();
+
+  // ---------- inicia a reprodução automática (independe do Supabase) ----------
+  startPlaying();
 </script>
 
 </body>
