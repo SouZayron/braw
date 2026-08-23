@@ -508,15 +508,15 @@
     z-index:5;
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:9px 16px 9px 9px;
+    gap:8px;
+    padding:9px 16px 9px 12px;
     border-radius:40px;
     background:linear-gradient(120deg, rgba(54,41,32,0.75), rgba(106,72,50,0.55));
     backdrop-filter:blur(16px);
     -webkit-backdrop-filter:blur(16px);
     border:1px solid rgba(247,232,214,0.2);
     box-shadow:0 6px 24px rgba(0,0,0,0.5);
-    width:min(360px, 80vw);
+    width:min(400px, 88vw);
   }
 
   .play-btn{
@@ -535,6 +535,26 @@
   }
   .play-btn:hover{ transform:scale(1.08); }
   .play-btn svg{ width:14px; height:14px; fill:var(--c10); }
+
+  .nav-btn{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(247,232,214,0.18);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .nav-btn:hover{
+    transform:scale(1.1);
+    background:rgba(191,129,88,0.25);
+  }
+  .nav-btn:active{ transform:scale(0.92); }
+  .nav-btn svg{ width:12px; height:12px; fill:var(--c2); }
 
   .track-info{
     flex:1;
@@ -672,8 +692,16 @@
 
 <!-- MUSIC PLAYER -->
 <div class="player">
+  <button class="nav-btn" id="prevBtn" aria-label="Faixa anterior">
+    <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+  </button>
+
   <button class="play-btn" id="playBtn">
     <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+
+  <button class="nav-btn" id="nextBtn" aria-label="Próxima faixa">
+    <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6h2v12h-2z"/></svg>
   </button>
 
   <div class="track-info">
@@ -807,6 +835,8 @@
   const audio = document.getElementById('audio');
   const playBtn = document.getElementById('playBtn');
   const playIcon = document.getElementById('playIcon');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
   const volBtn = document.getElementById('volBtn');
   const volPopup = document.getElementById('volPopup');
   const volSlider = document.getElementById('volSlider');
@@ -817,7 +847,8 @@
   const PLAYLIST = [
     { name: "Única - Duquesa", src: "Única - Duquesa (youtube).mp3" },
     { name: "Kehlani - Folded", src: "Kehlani - Folded  A COLORS SHOW - COLORS (youtube).mp3" },
-    { name: "Marian Hill - Lips", src: "Marian Hill - Lips (Audio) - MarianHillVEVO (youtube).mp3" }
+    { name: "Marian Hill - Lips", src: "Marian Hill - Lips (Audio) - MarianHillVEVO (youtube).mp3" },
+    { name: "HUGEL - Movin' To The Sun", src: "HUGEL - Movin' To The Sun (Lyrics) - OnLyrics (youtube).mp3" }
   ];
   let currentTrack = 0;
 
@@ -874,6 +905,24 @@
       audio.play().catch(()=>{});
       playIcon.innerHTML = ICON_PAUSE;
       isPlaying = true;
+    }
+  });
+
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    loadTrack(currentTrack - 1);
+    if(isPlaying){
+      audio.play().catch(()=>{});
+      playIcon.innerHTML = ICON_PAUSE;
+    }
+  });
+
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    loadTrack(currentTrack + 1);
+    if(isPlaying){
+      audio.play().catch(()=>{});
+      playIcon.innerHTML = ICON_PAUSE;
     }
   });
 
