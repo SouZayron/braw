@@ -816,10 +816,10 @@
 
   // ---------- playlist (arquivos mp3 no mesmo repositório do GitHub) ----------
   const PLAYLIST = [
-    { name: "HUGEL - Movin' To The Sun", src: "HUGEL - Movin' To The Sun (Lyrics) - OnLyrics (youtube).mp3" },
-    { name: "Única - Duquesa", src: "Única - Duquesa (youtube).mp3" },
-    { name: "Kehlani - Folded", src: "Kehlani - Folded  A COLORS SHOW - COLORS (youtube).mp3" },
-    { name: "Marian Hill - Lips", src: "Marian Hill - Lips (Audio) - MarianHillVEVO (youtube).mp3" }
+    { name: "HUGEL - Movin' To The Sun", src: "musicas/01.mp3" },
+    { name: "Única - Duquesa", src: "musicas/02.mp3" },
+    { name: "Kehlani - Folded", src: "musicas/03.mp3" },
+    { name: "Marian Hill - Lips", src: "musicas/04.mp3" }
   ];
   let currentTrack = 0;
 
@@ -859,11 +859,7 @@
       playPromise.then(() => {
         isPlaying = true;
         playIcon.innerHTML = ICON_PAUSE;
-        // desmuta após 3 segundos
-        clearTimeout(unmuteTimer);
-        unmuteTimer = setTimeout(() => {
-          audio.muted = false;
-        }, 3000);
+        // o desmute acontece no primeiro clique/toque (firstInteraction)
       }).catch((err) => {
         // autoplay bloqueado — vai tentar de novo em outros gatilhos (load, canplay, interação)
         console.warn('Autoplay ainda bloqueado, tentando novamente:', err);
@@ -889,13 +885,10 @@
 
   // último recurso: qualquer clique/toque na página força o play com som
   function firstInteraction(){
-    if(!isPlaying){
-      audio.muted = false;
-      audio.play().then(() => {
-        isPlaying = true;
-        playIcon.innerHTML = ICON_PAUSE;
-      }).catch(()=>{});
-    }
+    audio.muted = false; // sempre desmuta no primeiro clique
+    if(audio.paused){ audio.play().catch(()=>{}); }
+    isPlaying = true;
+    playIcon.innerHTML = ICON_PAUSE;
     document.removeEventListener('click', firstInteraction);
     document.removeEventListener('touchstart', firstInteraction);
   }
